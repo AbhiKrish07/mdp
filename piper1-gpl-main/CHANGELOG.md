@@ -1,0 +1,117 @@
+# Changelog
+
+## Unreleased
+
+- Resolve renamed voices in `piper.download_voices` using the `aliases` list in voices.json
+    - A voice that has been renamed keeps its old name in the `aliases` list of its voices.json entry, but nothing honored it: the downloader builds its URL from the voice name alone and never reads voices.json, so every pre-1.0 name (`de-karlsson-low`, `zh-cn-huayan-x-low`, ...) failed - those names do not even match the `<language>-<name>-<quality>` pattern, so they raised before any download was attempted
+    - A name that does not parse, or that parses but 404s, is now looked up in the `aliases` lists and downloaded under its current name, with a warning saying what it was renamed to
+    - voices.json is only downloaded when a name actually has to be resolved, so a current name still costs the same two requests it always did
+- Add Lithuanian phonemizer using espeak-ng plus a pitch accent dictionary
+    - `--data.phoneme_type lithuanian` for training; `"phoneme_type": "lithuanian"` in a voice config for synthesis
+    - espeak-ng's Lithuanian voice phonemizes well but places stress incorrectly in roughly half of the words, and it cannot express the three Lithuanian pitch accents at all: it collapses them into one primary-stress mark, so kártas ("a time") and kar̃tas ("bitter") come out identical
+    - The phonemizer keeps espeak-ng as the phoneme source and moves the stress mark to the accented syllable using a dictionary built from the LIEPA corpus and the g2p-lt-lexicon, both CC-BY-4.0; words that are missing keep espeak-ng's own placement
+    - Accents reuse ˈ and ˌ and add ˋ (U+02CB) - one symbol appended to the default IPA map, so Lithuanian voices stay compatible with the IPA-based (espeak) warmstart
+    - The stress dictionary (3 MB, CC-BY-4.0) and the letter-name table ship with piper as package data, like the Hebrew model: pip install, download the voice, it works - no extra files and no new dependency; a voice may pass its own files to `LithuanianPhonemizer` instead
+    - Lithuanian also has a vocative case spelled like the nominative but accented differently (mamà "mother" vs mãma "mum!"); a dictionary holding one entry per spelling cannot express it, so a short list of nouns that occur as address ships alongside, and a word on that list fenced off by commas is accented on the first syllable
+    - The shipped letter-name table also separates z and ž, which espeak-ng names identically (ʑˈee), so the initials of "Zigmas" and "Žygimantas" are no longer read the same, and names Š "šė" rather than "eš"
+
+## 1.8.0
+
+- Fix the training learning rate never decaying
+    - `VitsModel` sets `automatic_optimization = False`, and under manual optimization Lightning does not step the schedulers returned by `configure_optimizers` — nothing else did either, so the learning rate stayed pinned at its initial value for the whole run
+    - Every checkpoint written before this reports `lr_schedulers` `last_epoch=0` no matter how many epochs it trained
+    - `on_train_epoch_end` now steps both schedulers, and logs `lr_g`/`lr_d`
+- Derive `--model.lr_decay`/`--model.lr_decay_d` from `--trainer.max_epochs` when they are not set explicitly
+    - The old default (`0.999875`, from upstream VITS) assumes a ~20,000-epoch schedule and decays the learning rate by only ~1% per 100 epochs, so simply stepping the scheduler would have changed almost nothing
+    - The derived decay anneals to `--model.lr_final_ratio` (default `0.05`) of the initial learning rate over the run; `--model.lr_final_ratio 1.0` keeps it constant
+    - Open-ended runs (`max_epochs=-1`, the default) have no run length to anneal over and still fall back to the upstream constants, with a warning
+    - Resuming with `--ckpt_path` re-asserts the configured decay: `ExponentialLR.state_dict()` carries `gamma`, so the restored value would otherwise silently replace it
+- Fix a resume silently reverting to the warmstart checkpoint
+    - `LightningCLI._parse_ckpt_path` merges a resumed checkpoint's saved `hyper_parameters` back over the parsed config, so `--model.warmstart_ckpt` comes back even when it is absent from the command line
+    - Trainer restores model weights before `on_fit_start` and the optimizer/loop state after it, so the warmstart overwrote the resumed weights with the base model while keeping the restored epoch — discarding every epoch trained so far
+    - `on_fit_start` now skips both warmstart paths whenever `trainer.ckpt_path` is set, and logs that it did
+- Add `script/libritts_r_to_csv`, which converts extracted LibriTTS-R splits to Piper's metadata CSV
+    - Writes through `csv.writer(delimiter="|")` so quoting round-trips through the `csv.reader` the trainer uses — a hand-rolled `"|".join()` silently drops the quotation marks that LibriTTS dialogue is full of
+    - Falls back from `.normalized.txt` to the chapter `.trans.tsv` to `.original.txt`, and skips utterances whose audio has no transcript
+    - Optional `--min-seconds`/`--max-seconds` filtering and a `--stats` duration histogram
+- Add Thai phonemizer using TLTK in the new `th` extra
+    - `--data.phoneme_type thai` for training; `"phoneme_type": "thai"` in a voice config for synthesis
+    - espeak-ng's Thai voice is a placeholder: its `th_dict` holds no lexicon, so unspaced Thai is never segmented; the leading vowels เ แ โ ใ ไ are not reordered; and a tone mark deletes the syllable's vowel, collapsing ป่า/ป้า/ป๊า/ป๋า to the same phonemes
+    - TLTK does dictionary-based word segmentation and emits a tone digit (1-5) per syllable, in the same style `phonemize_chinese` uses for Mandarin tones
+    - The whole inventory already has ids in the default IPA map, so Thai voices stay compatible with the IPA-based (espeak) warmstart
+- Add `script/setup --th`, and install the `th` extra in CI so the Thai tests run
+
+## 1.7.0
+
+- Add Japanese phonemizer using OpenJTalk (`pyopenjtalk-plus`) in the new `ja` extra
+    - `--data.phoneme_type japanese` for training; `"phoneme_type": "japanese"` in a voice config for synthesis
+    - espeak-ng has no kanji coverage (it reads out Unicode character names) and no pitch accent
+    - Full-context labels are parsed for pitch accent and mapped to IPA, so Japanese voices stay compatible with the IPA-based (espeak) warmstart
+- Add `script/setup --ja`, and install the `ja` extra in CI so the Japanese tests run
+- `libpiper`: add `piper_create_options` and `piper_create_with_options()`, with `piper_create()` kept as a wrapper for ABI compatibility
+
+## 1.6.1
+
+- Run the g2pW model through `piper.g2pw_onnx` instead of `g2pw.api`, dropping `torch` (~750 MB installed) and `requests` from the `zh` extra
+    - `g2pw.api` imports torch only to build padded tensors and iterate batches; the model itself already ran under onnxruntime
+    - Also 1.5-2x faster, since it no longer forks DataLoader worker processes on every call
+    - `g2pW` is still required, for its pinyin/bopomofo lookup tables
+
+## 1.6.0
+
+- Add Hebrew phonemizer using Nakdimon
+
+## 1.5.0
+
+- Add `libpiper` C++ CLI executable ported from the legacy Piper repository, plus a C++ test suite
+- Fix `libpiper` builds on Windows (MSVC, MSYS2-GCC) and Windows CI
+- Bump embedded espeak-ng version
+- Add default speaker id for multi-speaker voices
+- Add vowel clustering support (`--data.vowel_clusters`)
+- Add in-memory patching for alignments
+- Training: add MRD (Multi-Resolution STFT) discriminator, loss/MOS tracking with UTMOS, silence-trim fixes, and dataloader performance improvements
+- Pass custom phoneme id map when training
+
+## 1.4.2
+
+- Fix `pathvalidate` dependency
+
+## 1.4.1
+
+- Add missing wheels
+
+## 1.4.0
+
+- Add Chinese phonemizer based on [g2pW](https://github.com/GitYCC/g2pW/)
+    - Using a quantized version of the original model with `quantize_dynamic`
+- Add `--data.phoneme_type pinyin` for Chinese phonemization using g2pW
+- Add `--data.phoneme_type text` for using IPA phonemes directly (no espeak-ng)
+- Add `--model.vocoder_warmstart_ckpt <CHECKPOINT>` to restore vocoder params only
+- Add `--data.dataset_type 'phoneme_ids'` to train with pre-generated phoneme ids
+    - Use `--data.num_symbols <N>` to set number of phonemes
+    - Use `--data.phonemes_path "/path/to/phonemes.json"` for phoneme/id map
+- Add `--output-dir-naming` option with `timestamp` (default) and `text`
+
+## 1.3.1
+
+- Add experimental support for alignments (see docs/ALIGNMENTS.md)
+- Raw phonemes no longer split sentences
+- Fix training for multi-speaker voices
+
+## 1.3.0
+
+- Moved development to OHF-Voice org
+- Removed C++ code for now to focus on Python development
+    - A C API `libpiper` written in C++ is planned
+- Embed espeak-ng directly instead of using separate `piper-phonemize` library
+- Change license to GPLv3
+- Use Python stable ABI (3.9+) so only a single wheel per platform is needed
+- Change Python API:
+    - `PiperVoice.synthesize` takes a `SynthesisConfig` and generates `AudioChunk` objects
+    - `PiperVoice.synthesize_raw` is removed
+- Add separate `piper.download_voices` utility for downloading voices from HuggingFace
+- Allow text as CLI argument: `piper ... -- "Text to speak"`
+- Allow text from one or more files with `--input-file <FILE>`
+- Excluding any file output arguments will play audio directly with `ffplay`
+- Support for raw phonemes in text with `[[ <phonemes> ]]`
+- Adjust output volume with `--volume <MULTIPLIER>` (default is 1.0)

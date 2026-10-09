@@ -1,0 +1,15 @@
+[Unit]
+Description=AI Desk Companion Autonomous Service
+After=network.target mosquitto.service
+
+[Service]
+Type=simple
+User=pi
+WorkingDirectory=/home/pi/ai-desk-companion
+ExecStart=/usr/bin/python3 /home/pi/ai-desk-companion/main.py
+Restart=always
+RestartSec=5
+Environment=GROQ_API_KEY=gsk_your_api_key_here
+
+[Install]
+WantedBy=multi-user.target

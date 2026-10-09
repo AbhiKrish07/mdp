@@ -1,0 +1,43 @@
+# AI Desk Companion - Hardware Calibration Configuration
+
+servos:
+  left_arm:
+    channel: 0
+    min_angle: 0
+    max_angle: 180
+    neutral_angle: 90
+    trim: 2
+  right_arm:
+    channel: 1
+    min_angle: 0
+    max_angle: 180
+    neutral_angle: 90
+    trim: -1
+  head_tilt:
+    channel: 2
+    min_angle: 30
+    max_angle: 150
+    neutral_angle: 90
+    trim: 0
+
+motors:
+  left_wheel:
+    pwm_pin: 12
+    dir_pin: 16
+    trim_multiplier: 1.0
+  right_wheel:
+    pwm_pin: 13
+    dir_pin: 20
+    trim_multiplier: 0.98
+
+sensors:
+  ir_front_left:
+    pin: 22
+    edge_threshold_cm: 4.0
+  ir_front_right:
+    pin: 23
+    edge_threshold_cm: 4.0
+  mic_array:
+    channels: 2
+    sample_rate: 16000
+    noise_suppression_dB: -12
