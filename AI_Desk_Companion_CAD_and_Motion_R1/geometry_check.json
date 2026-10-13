@@ -1,0 +1,21 @@
+{
+  "parts_count": 75,
+  "invalid_shape_count": 0,
+  "assembly_bbox_mm": {
+    "x": 178.01,
+    "y": 100.21,
+    "z": 264.05
+  },
+  "x_min": -89.0,
+  "x_max": 89.0,
+  "y_min": -54.2,
+  "y_max": 46.01,
+  "z_min": -0.01,
+  "z_max": 264.04,
+  "notes": [
+    "All dimensions are nominal preliminary values.",
+    "Internal boards, battery and cooler are bounding-envelope placeholders.",
+    "No exact material properties, fasteners, servo models, battery model or manufacturing tolerances are frozen.",
+    "Assembly compound contains overlapping component representations; do not slice as one printable object."
+  ]
+}

@@ -1,0 +1,15 @@
+Pose,Side,Shoulder pitch (deg),Elbow relative (deg),Gripper
+Neutral_Open,left,-25,40,open
+Neutral_Open,right,-25,40,open
+Wave_Left,left,45,-55,open
+Wave_Left,right,-25,40,open
+Wave_Right,left,-25,40,open
+Wave_Right,right,45,-55,open
+Point_Both,left,0,0,open
+Point_Both,right,0,0,open
+Nudge_Both,left,-20,55,open
+Nudge_Both,right,-20,55,open
+Gripper_Closed,left,-25,40,closed
+Gripper_Closed,right,-25,40,closed
+Reach_Forward,left,-8,10,open
+Reach_Forward,right,-8,10,open

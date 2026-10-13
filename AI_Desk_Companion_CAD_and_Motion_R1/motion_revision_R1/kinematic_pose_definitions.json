@@ -1,0 +1,429 @@
+{
+  "units": "mm, degrees",
+  "coordinates": "X width; Y depth with front = negative Y; Z up",
+  "arm_model": {
+    "shoulder_left": [
+      -37.0,
+      -20.0,
+      147.0
+    ],
+    "shoulder_right": [
+      37.0,
+      -20.0,
+      147.0
+    ],
+    "upper_link_length_mm": 28.0,
+    "forearm_link_length_mm": 26.0,
+    "shoulder_pitch_range_deg": [
+      -35,
+      50
+    ],
+    "elbow_relative_range_deg": [
+      -60,
+      65
+    ],
+    "gripper_open_gap_mm": 22.6,
+    "gripper_closed_tip_center_gap_mm": 5.6,
+    "axes": {
+      "shoulder_pitch": "X axis through shoulder center; motion in Y-Z plane",
+      "elbow_pitch": "X axis through elbow center; relative angle added to shoulder pitch",
+      "gripper_jaws": "Z axis through each jaw pivot; coupled open/close mechanism"
+    },
+    "actuator_count": "6 arm actuators total: 2 arm joints + 1 gripper actuator per arm",
+    "not_included": "No active leg locomotion; legs/feet remain structural. STEP pose files are static snapshots, not constraint-driven CAD animation."
+  },
+  "poses": {
+    "Neutral_Open": {
+      "left": {
+        "shoulder": [
+          -37.0,
+          -20.0,
+          147.0
+        ],
+        "elbow": [
+          -37.0,
+          -45.3766180370262,
+          135.1666886712604
+        ],
+        "wrist": [
+          -37.0,
+          -70.49068952054198,
+          141.89598384392593
+        ],
+        "palm": [
+          -37.0,
+          -75.49068952054198,
+          141.89598384392593
+        ],
+        "angles_deg": {
+          "shoulder_pitch": -25,
+          "elbow_relative": 40,
+          "gripper_open": true
+        }
+      },
+      "right": {
+        "shoulder": [
+          37.0,
+          -20.0,
+          147.0
+        ],
+        "elbow": [
+          37.0,
+          -45.3766180370262,
+          135.1666886712604
+        ],
+        "wrist": [
+          37.0,
+          -70.49068952054198,
+          141.89598384392593
+        ],
+        "palm": [
+          37.0,
+          -75.49068952054198,
+          141.89598384392593
+        ],
+        "angles_deg": {
+          "shoulder_pitch": -25,
+          "elbow_relative": 40,
+          "gripper_open": true
+        }
+      }
+    },
+    "Wave_Left": {
+      "left": {
+        "shoulder": [
+          -37.0,
+          -20.0,
+          147.0
+        ],
+        "elbow": [
+          -37.0,
+          -39.798989873223334,
+          166.79898987322332
+        ],
+        "wrist": [
+          -37.0,
+          -65.40399145154075,
+          162.28413725388313
+        ],
+        "palm": [
+          -37.0,
+          -70.40399145154075,
+          162.28413725388313
+        ],
+        "angles_deg": {
+          "shoulder_pitch": 45,
+          "elbow_relative": -55,
+          "gripper_open": true
+        }
+      },
+      "right": {
+        "shoulder": [
+          37.0,
+          -20.0,
+          147.0
+        ],
+        "elbow": [
+          37.0,
+          -45.3766180370262,
+          135.1666886712604
+        ],
+        "wrist": [
+          37.0,
+          -70.49068952054198,
+          141.89598384392593
+        ],
+        "palm": [
+          37.0,
+          -75.49068952054198,
+          141.89598384392593
+        ],
+        "angles_deg": {
+          "shoulder_pitch": -25,
+          "elbow_relative": 40,
+          "gripper_open": true
+        }
+      }
+    },
+    "Wave_Right": {
+      "left": {
+        "shoulder": [
+          -37.0,
+          -20.0,
+          147.0
+        ],
+        "elbow": [
+          -37.0,
+          -45.3766180370262,
+          135.1666886712604
+        ],
+        "wrist": [
+          -37.0,
+          -70.49068952054198,
+          141.89598384392593
+        ],
+        "palm": [
+          -37.0,
+          -75.49068952054198,
+          141.89598384392593
+        ],
+        "angles_deg": {
+          "shoulder_pitch": -25,
+          "elbow_relative": 40,
+          "gripper_open": true
+        }
+      },
+      "right": {
+        "shoulder": [
+          37.0,
+          -20.0,
+          147.0
+        ],
+        "elbow": [
+          37.0,
+          -39.798989873223334,
+          166.79898987322332
+        ],
+        "wrist": [
+          37.0,
+          -65.40399145154075,
+          162.28413725388313
+        ],
+        "palm": [
+          37.0,
+          -70.40399145154075,
+          162.28413725388313
+        ],
+        "angles_deg": {
+          "shoulder_pitch": 45,
+          "elbow_relative": -55,
+          "gripper_open": true
+        }
+      }
+    },
+    "Point_Both": {
+      "left": {
+        "shoulder": [
+          -37.0,
+          -20.0,
+          147.0
+        ],
+        "elbow": [
+          -37.0,
+          -48.0,
+          147.0
+        ],
+        "wrist": [
+          -37.0,
+          -74.0,
+          147.0
+        ],
+        "palm": [
+          -37.0,
+          -79.0,
+          147.0
+        ],
+        "angles_deg": {
+          "shoulder_pitch": 0,
+          "elbow_relative": 0,
+          "gripper_open": true
+        }
+      },
+      "right": {
+        "shoulder": [
+          37.0,
+          -20.0,
+          147.0
+        ],
+        "elbow": [
+          37.0,
+          -48.0,
+          147.0
+        ],
+        "wrist": [
+          37.0,
+          -74.0,
+          147.0
+        ],
+        "palm": [
+          37.0,
+          -79.0,
+          147.0
+        ],
+        "angles_deg": {
+          "shoulder_pitch": 0,
+          "elbow_relative": 0,
+          "gripper_open": true
+        }
+      }
+    },
+    "Nudge_Both": {
+      "left": {
+        "shoulder": [
+          -37.0,
+          -20.0,
+          147.0
+        ],
+        "elbow": [
+          -37.0,
+          -46.311393382005434,
+          137.4234359868813
+        ],
+        "wrist": [
+          -37.0,
+          -67.60934653351921,
+          152.33642333200848
+        ],
+        "palm": [
+          -37.0,
+          -72.60934653351921,
+          152.33642333200848
+        ],
+        "angles_deg": {
+          "shoulder_pitch": -20,
+          "elbow_relative": 55,
+          "gripper_open": true
+        }
+      },
+      "right": {
+        "shoulder": [
+          37.0,
+          -20.0,
+          147.0
+        ],
+        "elbow": [
+          37.0,
+          -46.311393382005434,
+          137.4234359868813
+        ],
+        "wrist": [
+          37.0,
+          -67.60934653351921,
+          152.33642333200848
+        ],
+        "palm": [
+          37.0,
+          -72.60934653351921,
+          152.33642333200848
+        ],
+        "angles_deg": {
+          "shoulder_pitch": -20,
+          "elbow_relative": 55,
+          "gripper_open": true
+        }
+      }
+    },
+    "Gripper_Closed": {
+      "left": {
+        "shoulder": [
+          -37.0,
+          -20.0,
+          147.0
+        ],
+        "elbow": [
+          -37.0,
+          -45.3766180370262,
+          135.1666886712604
+        ],
+        "wrist": [
+          -37.0,
+          -70.49068952054198,
+          141.89598384392593
+        ],
+        "palm": [
+          -37.0,
+          -75.49068952054198,
+          141.89598384392593
+        ],
+        "angles_deg": {
+          "shoulder_pitch": -25,
+          "elbow_relative": 40,
+          "gripper_open": false
+        }
+      },
+      "right": {
+        "shoulder": [
+          37.0,
+          -20.0,
+          147.0
+        ],
+        "elbow": [
+          37.0,
+          -45.3766180370262,
+          135.1666886712604
+        ],
+        "wrist": [
+          37.0,
+          -70.49068952054198,
+          141.89598384392593
+        ],
+        "palm": [
+          37.0,
+          -75.49068952054198,
+          141.89598384392593
+        ],
+        "angles_deg": {
+          "shoulder_pitch": -25,
+          "elbow_relative": 40,
+          "gripper_open": false
+        }
+      }
+    },
+    "Reach_Forward": {
+      "left": {
+        "shoulder": [
+          -37.0,
+          -20.0,
+          147.0
+        ],
+        "elbow": [
+          -37.0,
+          -47.727505924763975,
+          143.10315317311816
+        ],
+        "wrist": [
+          -37.0,
+          -73.71166742726047,
+          144.0105400873832
+        ],
+        "palm": [
+          -37.0,
+          -78.71166742726047,
+          144.0105400873832
+        ],
+        "angles_deg": {
+          "shoulder_pitch": -8,
+          "elbow_relative": 10,
+          "gripper_open": true
+        }
+      },
+      "right": {
+        "shoulder": [
+          37.0,
+          -20.0,
+          147.0
+        ],
+        "elbow": [
+          37.0,
+          -47.727505924763975,
+          143.10315317311816
+        ],
+        "wrist": [
+          37.0,
+          -73.71166742726047,
+          144.0105400873832
+        ],
+        "palm": [
+          37.0,
+          -78.71166742726047,
+          144.0105400873832
+        ],
+        "angles_deg": {
+          "shoulder_pitch": -8,
+          "elbow_relative": 10,
+          "gripper_open": true
+        }
+      }
+    }
+  }
+}

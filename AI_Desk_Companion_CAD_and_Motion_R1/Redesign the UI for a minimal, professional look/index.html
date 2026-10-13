@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Form — CAD Workspace</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#" aria-label="Form home"><span class="brand-mark"><svg viewBox="0 0 24 24"><path d="m4 8 8-4 8 4-8 4-8-4Z"/><path d="m4 12 8 4 8-4M4 16l8 4 8-4"/></svg></span><span class="brand-name">form<span class="brand-dot">.</span></span></a>
+    <div class="project-title"><strong>Studio Titanium</strong><span>Packaging &amp; Mechanical Envelope</span></div>
+    <div class="top-actions"><span class="save-state"><i></i> All changes saved</span><button class="theme-toggle" id="themeToggle" aria-label="Switch to light mode" title="Switch theme"><span class="theme-glyph">☼</span><span class="theme-label">Light mode</span></button><span class="avatar">JD</span></div>
+  </header>
+  <main class="workspace">
+    <aside class="sidebar" id="sidebar" aria-label="Main navigation">
+      <button class="collapse-toggle" id="sidebarToggle" aria-label="Collapse navigation" title="Collapse navigation"><span>‹</span><span class="nav-label">Collapse</span></button>
+      <div class="nav-group"><span class="nav-caption">WORKSPACE</span>
+        <button class="nav-item active" title="Overview"><span class="nav-icon">⌂</span><span class="nav-label">Overview</span></button>
+        <button class="nav-item" title="Assemblies"><span class="nav-icon">▧</span><span class="nav-label">Assemblies</span><span class="nav-count">5</span></button>
+        <button class="nav-item" title="Components"><span class="nav-icon">▦</span><span class="nav-label">Components</span><span class="nav-count">75</span></button>
+      </div>
+      <div class="nav-group"><span class="nav-caption">DELIVERABLES</span>
+        <button class="nav-item" title="Drawings"><span class="nav-icon">▤</span><span class="nav-label">Drawings</span></button>
+        <button class="nav-item" title="Files"><span class="nav-icon">▱</span><span class="nav-label">Files</span></button>
+      </div>
+      <div class="sidebar-bottom"><span class="workspace-avatar">ST</span><span class="nav-label workspace-copy"><strong>Studio Titanium</strong><small>Design workspace</small></span><button class="workspace-menu nav-label" aria-label="Workspace menu">···</button></div>
+    </aside>
+    <section class="viewport" aria-label="3D model viewport">
+      <div class="view-toolbar">
+        <div class="view-switch" role="group" aria-label="View orientation">
+          <button class="view-choice active" data-view="ISO">ISO</button><button class="view-choice" data-view="FRONT">Front</button><button class="view-choice" data-view="RIGHT">Right</button><button class="view-choice" data-view="TOP">Top</button>
+        </div>
+        <div class="viewport-actions"><button class="tool-button selected" data-toggle="bounds"><span class="tiny-icon">□</span> Bounds</button><button class="tool-button" data-toggle="grid"><span class="tiny-icon">▦</span> Grid</button><button class="tool-button" data-toggle="axes"><span class="tiny-icon">＋</span> Axes</button><span class="divider"></span><button class="icon-button" title="Reset view" id="reset">↺</button><button class="tool-button" id="snapshot">Snapshot</button></div>
+      </div>
+      <div class="model-meta"><span class="eyebrow">ASSEMBLY ENVELOPE</span><div class="dimensions">264.1 <small>H</small><b>×</b> 178.0 <small>W</small><b>×</b> 100.2 <small>D mm</small></div><span class="meta-note">75 verified components <span class="dot-sep">·</span> No invalid shapes</span></div>
+      <div class="model-stage" id="modelStage">
+        <div class="stage-glow"></div><div class="floor-grid"></div>
+        <div class="bounds-box" id="boundsBox"><span></span></div>
+        <div class="robot" id="robot" aria-label="Simplified 3D model preview">
+          <div class="head"><div class="visor"><i></i><i></i></div><div class="head-side"></div></div>
+          <div class="neck"></div><div class="torso"><div class="chest-line"></div><div class="chest-panel"></div></div>
+          <div class="arm arm-left"><div class="joint"></div><div class="forearm"></div><div class="hand"></div></div>
+          <div class="arm arm-right"><div class="joint"></div><div class="forearm"></div><div class="hand"></div></div>
+          <div class="leg leg-left"><div class="foot"></div></div><div class="leg leg-right"><div class="foot"></div></div>
+          <div class="ground-shadow"></div>
+        </div>
+        <div class="axis-label axis-x">X</div><div class="axis-label axis-y">Y</div><div class="axis-label axis-z">Z</div>
+      </div>
+      <div class="viewport-footer"><span><i class="live-dot"></i> Geometry validated</span><span>Perspective <b>·</b> 45°</span><span>Units <b>·</b> Millimeters</span></div>
+    </section>
+    <aside class="inspector">
+      <nav class="tabs" aria-label="Inspector sections"><button class="tab active" data-panel="overview">Overview</button><button class="tab" data-panel="parts">Parts <span>75</span></button><button class="tab" data-panel="parameters">Parameters</button><button class="tab" data-panel="drawings">Drawings</button></nav>
+      <div class="panel-content" id="panelContent">
+        <div class="section-heading"><div><span class="eyebrow">PROJECT SUMMARY</span><h1>Assembly overview</h1></div><button class="more-button" aria-label="More summary options">···</button></div>
+        <div class="metric-grid">
+          <article class="metric"><span>Total height</span><strong>264.1 <small>mm</small></strong><div class="target">Target <b>270.0 mm</b></div></article>
+          <article class="metric"><span>Total width</span><strong>178.0 <small>mm</small></strong><div class="target">Target <b>180.0 mm</b></div></article>
+          <article class="metric"><span>Total depth</span><strong>100.2 <small>mm</small></strong><div class="target">Target <b>130.0 mm</b></div></article>
+          <article class="metric"><span>Solid bodies</span><strong>75 <small>solids</small></strong><div class="target good">All geometry valid</div></article>
+        </div>
+        <div class="list-heading"><div><h2>Subsystems</h2><span>5 assemblies</span></div><button class="text-button" id="expandAll">View all</button></div>
+        <div class="subsystem-list">
+          <button class="subsystem"><span class="sub-icon">◉</span><span class="sub-copy"><strong>Head &amp; sensor array</strong><small>OLED bezel, dual cameras, Pi 5</small></span><span class="part-count">25</span><span class="chevron">›</span></button>
+          <button class="subsystem"><span class="sub-icon">▣</span><span class="sub-copy"><strong>Torso logic bay</strong><small>Power distribution &amp; cooling</small></span><span class="part-count">14</span><span class="chevron">›</span></button>
+          <button class="subsystem"><span class="sub-icon">⌁</span><span class="sub-copy"><strong>Articulated arms</strong><small>3-DOF joints, left &amp; right</small></span><span class="part-count">26</span><span class="chevron">›</span></button>
+          <button class="subsystem"><span class="sub-icon">Ⅱ</span><span class="sub-copy"><strong>Leg columns</strong><small>Dual structural supports</small></span><span class="part-count">4</span><span class="chevron">›</span></button>
+          <button class="subsystem"><span class="sub-icon">⌑</span><span class="sub-copy"><strong>Stabilizer feet</strong><small>Anti-tip contact pads</small></span><span class="part-count">6</span><span class="chevron">›</span></button>
+        </div>
+        <div class="inspector-bottom"><span class="file-icon">↗</span><span><strong>Ready to export</strong><small>STEP, STL and technical drawings</small></span><button aria-label="Open export options">→</button></div>
+      </div>
+    </aside>
+  </main>
+  <div class="toast" id="toast" role="status"></div>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -5,6 +5,8 @@ node_modules/
 # Builds
 dist/
 build/
+.next/
+.turbo/
 *.egg-info/
 
 # Python Cache & Bytecode

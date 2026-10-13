@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Desk Companion — 3D Parametric CAD Inspection Suite</title>
+  <meta name="description" content="Interactive 3D Web CAD Viewer & Engineering Inspector for the AI Desk Companion. Inspect 75 assembly parts, parametric envelopes, 3D cross-sections, and BOM specifications.">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="app-container">
+    
+    <!-- Top Header Navigation -->
+    <header class="app-header">
+      <div class="brand-section">
+        <div class="logo-badge" title="AI Desk Companion CAD Engine">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+            <polyline points="2 17 12 22 22 17"></polyline>
+            <polyline points="2 12 12 17 22 12"></polyline>
+          </svg>
+        </div>
+        <div class="brand-info">
+          <h1>AI Desk Companion <span class="tag">CAD R0.1</span></h1>
+          <p>Parametric Packaging &amp; Mechanical Envelope Model</p>
+        </div>
+      </div>
+
+      <!-- Quick Toolbar Controls -->
+      <div class="header-actions">
+        <!-- Render Style Selector -->
+        <div class="btn-group">
+          <select id="render-style-select" class="action-select" title="Change 3D Material / Shader Mode">
+            <option value="studio">Studio Titanium</option>
+            <option value="cyberpunk">Cyberpunk Stealth</option>
+            <option value="clay">Clay Matte</option>
+            <option value="wireframe">Blueprint Wireframe</option>
+            <option value="ghost">X-Ray Ghost (Translucent)</option>
+          </select>
+        </div>
+
+        <!-- Camera Preset Selector -->
+        <div class="btn-group">
+          <select id="camera-preset-select" class="action-select" title="Camera Angles">
+            <option value="iso">Isometric View</option>
+            <option value="front">Front (Display)</option>
+            <option value="right">Right Profile</option>
+            <option value="top">Top (Head &amp; Sensors)</option>
+            <option value="back">Rear (Electronics)</option>
+            <option value="left">Left Profile</option>
+          </select>
+        </div>
+
+        <!-- Viewport Toggles -->
+        <div class="btn-group">
+          <button id="btn-toggle-bbox" class="action-btn active" title="Toggle 3D Bounding Box & Dimensions">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v3m18 8v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3M3 12h18"/></svg>
+            <span>Bounds</span>
+          </button>
+          <button id="btn-toggle-slice" class="action-btn" title="Toggle Interactive 3D Cross-Section Slicing">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
+            <span>Section</span>
+          </button>
+          <button id="btn-toggle-autorotate" class="action-btn" title="Toggle Auto-Rotation">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+            <span>Orbit</span>
+          </button>
+        </div>
+
+        <!-- Utility Buttons -->
+        <div class="btn-group">
+          <button id="btn-reset-cam" class="action-btn" title="Reset Viewport Camera">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><polyline points="3 3 3 8 8 8"></polyline></svg>
+            <span>Reset</span>
+          </button>
+          <button id="btn-take-snapshot" class="action-btn" title="Export High-Res PNG Snapshot">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+            <span>Snap</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <main class="workspace">
+      
+      <!-- 3D Viewport Wrapper -->
+      <section class="viewport-wrapper" id="viewport-container" aria-label="3D Model Viewport">
+        <canvas id="three-canvas"></canvas>
+
+        <!-- Loading Screen Overlay -->
+        <div id="loader-overlay">
+          <div class="spinner-box">
+            <div class="spinner-ring"></div>
+            <div class="spinner-ring"></div>
+            <div class="spinner-ring"></div>
+          </div>
+          <div class="loader-text">Loading AI Desk Companion CAD Model</div>
+          <div class="loader-progress">
+            <div class="loader-bar" id="loader-progress-bar"></div>
+          </div>
+          <div class="loader-status" id="loader-status-text">Parsing OpenCASCADE STL Geometry...</div>
+        </div>
+
+        <!-- HUD: Camera Pills & Live Dimension Overlay -->
+        <div class="viewport-hud">
+          <div class="camera-pills">
+            <button class="camera-pill-btn active" data-view="iso">ISO</button>
+            <button class="camera-pill-btn" data-view="front">FRONT</button>
+            <button class="camera-pill-btn" data-view="right">RIGHT</button>
+            <button class="camera-pill-btn" data-view="top">TOP</button>
+            <button class="camera-pill-btn" data-view="back">REAR</button>
+          </div>
+
+          <div class="stats-card-hud">
+            <div>ASSEMBLY ENVELOPE (NOMINAL):</div>
+            <div>H: <strong>264.05 mm</strong> &bull; W: <strong>178.01 mm</strong> &bull; D: <strong>100.21 mm</strong></div>
+            <div style="margin-top: 4px;">COMPONENTS: <strong>75 Verified Solids</strong></div>
+            <div>COORDINATES: <strong>X: Width, Y: Depth, Z: Height</strong></div>
+          </div>
+        </div>
+
+        <!-- HUD: Bottom-left Controls -->
+        <div class="viewport-tools">
+          <div id="tool-grid-toggle" class="tool-chip active" title="Toggle Ground Alignment Grid">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+            <span>Ground Grid</span>
+          </div>
+          <div id="tool-axes-toggle" class="tool-chip active" title="Toggle 3D Coordinate Tripod">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="2" x2="12" y2="22"></line><line x1="2" y1="12" x2="22" y2="12"></line></svg>
+            <span>Coordinate Axes</span>
+          </div>
+        </div>
+
+        <!-- Slicing / Cross-Section Panel -->
+        <div id="slicing-panel" class="slicing-panel hidden">
+          <div class="slicing-header">
+            <span>3D Section Slicing</span>
+            <button id="btn-close-slice" style="background:none; border:none; color:var(--text-muted); cursor:pointer;">&times;</button>
+          </div>
+          
+          <div class="slider-group">
+            <div class="slider-label">
+              <span>Z-Axis Plane (Height Cut)</span>
+              <span id="slice-z-val" class="val">265 mm</span>
+            </div>
+            <input type="range" id="slider-slice-z" min="0" max="270" step="1" value="270">
+          </div>
+
+          <div class="slider-group">
+            <div class="slider-label">
+              <span>Y-Axis Plane (Front/Back Depth)</span>
+              <span id="slice-y-val" class="val">50 mm</span>
+            </div>
+            <input type="range" id="slider-slice-y" min="-60" max="50" step="1" value="50">
+          </div>
+
+          <div class="slider-group">
+            <div class="slider-label">
+              <span>X-Axis Plane (Left/Right Width)</span>
+              <span id="slice-x-val" class="val">90 mm</span>
+            </div>
+            <input type="range" id="slider-slice-x" min="-90" max="90" step="1" value="90">
+          </div>
+
+          <button id="btn-reset-slices" class="action-btn" style="width: 100%; justify-content: center; background: rgba(255,255,255,0.06);">
+            Reset All Slicing Planes
+          </button>
+        </div>
+
+      </section>
+
+      <!-- Sidebar Toggle Floating Trigger -->
+      <button id="sidebar-toggle" class="sidebar-toggle-btn" title="Toggle Engineering Inspector Panel">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+
+      <!-- Sidebar Engineering Control Center -->
+      <aside class="app-sidebar" id="app-sidebar">
+        <!-- Sidebar Navigation Tabs -->
+        <nav class="sidebar-tabs" aria-label="Sidebar navigation">
+          <button class="tab-btn active" data-tab="tab-overview">Overview</button>
+          <button class="tab-btn" data-tab="tab-bom">BOM / Parts (75)</button>
+          <button class="tab-btn" data-tab="tab-params">Params</button>
+          <button class="tab-btn" data-tab="tab-drawings">Drawings</button>
+          <button class="tab-btn" data-tab="tab-exports">Files</button>
+        </nav>
+
+        <!-- Sidebar Content Area -->
+        <div class="sidebar-content">
+
+          <!-- TAB 1: OVERVIEW -->
+          <div id="tab-overview" class="tab-pane active">
+            <div class="metrics-grid">
+              <div class="metric-card">
+                <span class="label">Total Height</span>
+                <span class="value">264.1 mm</span>
+                <span class="sub">Target: 270.0 mm</span>
+              </div>
+              <div class="metric-card">
+                <span class="label">Total Wingspan</span>
+                <span class="value">178.0 mm</span>
+                <span class="sub">Target: 180.0 mm</span>
+              </div>
+              <div class="metric-card">
+                <span class="label">Total Depth</span>
+                <span class="value">100.2 mm</span>
+                <span class="sub">Target: 130.0 mm</span>
+              </div>
+              <div class="metric-card">
+                <span class="label">Solids Count</span>
+                <span class="value">75 Solids</span>
+                <span class="sub">0 Invalid Shapes</span>
+              </div>
+            </div>
+
+            <div class="panel-section-title">
+              <span>Modular Subsystems</span>
+              <span style="font-family: var(--font-mono); font-size: 10px;">5 Assemblies</span>
+            </div>
+
+            <div class="subsystem-list">
+              <!-- Head -->
+              <div class="subsystem-card" data-subsystem="head" title="Focus Head Subsystem">
+                <div class="subsystem-left">
+                  <div class="subsystem-icon">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                  </div>
+                  <div class="subsystem-info">
+                    <h4>Head &amp; Sensor Array</h4>
+                    <p>104&times;77&times;80 mm &bull; OLED Bezel, Dual Cameras, Pi5</p>
+                  </div>
+                </div>
+                <span class="subsystem-badge">25 parts</span>
+              </div>
+
+              <!-- Torso / Body -->
+              <div class="subsystem-card" data-subsystem="body" title="Focus Torso Subsystem">
+                <div class="subsystem-left">
+                  <div class="subsystem-icon">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+                  </div>
+                  <div class="subsystem-info">
+                    <h4>Torso Logic Bay</h4>
+                    <p>70&times;52&times;51 mm &bull; Power Distribution &amp; Cooling Vents</p>
+                  </div>
+                </div>
+                <span class="subsystem-badge">14 parts</span>
+              </div>
+
+              <!-- Arms -->
+              <div class="subsystem-card" data-subsystem="arms" title="Focus Arms Subsystem">
+                <div class="subsystem-left">
+                  <div class="subsystem-icon">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                  </div>
+                  <div class="subsystem-info">
+                    <h4>Articulated Arms (L / R)</h4>
+                    <p>Dual 3-DOF articulated joints &amp; decorative discs</p>
+                  </div>
+                </div>
+                <span class="subsystem-badge">26 parts</span>
+              </div>
+
+              <!-- Legs -->
+              <div class="subsystem-card" data-subsystem="legs" title="Focus Legs Subsystem">
+                <div class="subsystem-left">
+                  <div class="subsystem-icon">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="8" y2="18"></line><line x1="16" y1="6" x2="16" y2="18"></line></svg>
+                  </div>
+                  <div class="subsystem-info">
+                    <h4>Leg Columns</h4>
+                    <p>62 mm spacing &bull; Dual structural columns</p>
+                  </div>
+                </div>
+                <span class="subsystem-badge">4 parts</span>
+              </div>
+
+              <!-- Feet -->
+              <div class="subsystem-card" data-subsystem="feet" title="Focus Feet Subsystem">
+                <div class="subsystem-left">
+                  <div class="subsystem-icon">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path></svg>
+                  </div>
+                  <div class="subsystem-info">
+                    <h4>Stabilizer Feet</h4>
+                    <p>58&times;92&times;16 mm &bull; Anti-tip desk contact pads</p>
+                  </div>
+                </div>
+                <span class="subsystem-badge">6 parts</span>
+              </div>
+            </div>
+
+            <!-- Notes Alert -->
+            <div style="background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.25); border-radius: var(--radius-md); padding: 12px; font-size: 11px; line-height: 1.5; color: #fbbf24;">
+              <strong>Notice:</strong> This is an envelope packaging model. Internal electronics (Pi5, Cooler, Battery, Speakers) are bounding placeholders. Review accompanying PDF before physical fabrication.
+            </div>
+          </div>
+
+          <!-- TAB 2: BOM / PART INSPECTOR -->
+          <div id="tab-bom" class="tab-pane">
+            <div class="bom-controls">
+              <div class="search-input-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <input type="text" id="bom-search" placeholder="Search 75 components (e.g. Pi5, Bezel, Ear, Battery)...">
+              </div>
+
+              <div class="filter-chips">
+                <button class="filter-chip active" data-filter="all">All (75)</button>
+                <button class="filter-chip" data-filter="head">Head (25)</button>
+                <button class="filter-chip" data-filter="body">Body (14)</button>
+                <button class="filter-chip" data-filter="arms">Arms (26)</button>
+                <button class="filter-chip" data-filter="legs">Legs (4)</button>
+                <button class="filter-chip" data-filter="feet">Feet (6)</button>
+              </div>
+            </div>
+
+            <div class="bom-table-container">
+              <table class="bom-table">
+                <thead>
+                  <tr>
+                    <th>Component Name</th>
+                    <th>Module</th>
+                    <th>Envelope (X &times; Y &times; Z)</th>
+                  </tr>
+                </thead>
+                <tbody id="bom-tbody">
+                  <!-- Generated dynamically from manifest_data.js -->
+                </tbody>
+              </table>
+            </div>
+
+            <div id="selected-part-card" style="display:none; background:rgba(0,242,254,0.08); border:1px solid var(--border-accent); border-radius:var(--radius-md); padding:12px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                <h4 id="sp-name" style="font-size:12px; color:var(--accent-cyan);">Component Name</h4>
+                <span id="sp-mod" class="subsystem-badge">module</span>
+              </div>
+              <div style="font-family:var(--font-mono); font-size:11px; color:var(--text-secondary); line-height:1.6;" id="sp-details">
+                <!-- Details -->
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 3: PARAMETERS -->
+          <div id="tab-params" class="tab-pane">
+            <div class="panel-section-title">
+              <span>Nominal Design Targets (mm)</span>
+              <span>CadQuery Parameters</span>
+            </div>
+
+            <table class="params-table" id="params-table">
+              <!-- Generated from parameters_data.js -->
+            </table>
+          </div>
+
+          <!-- TAB 4: DRAWINGS & RENDERS -->
+          <div id="tab-drawings" class="tab-pane">
+            <div class="panel-section-title">
+              <span>Engineering Drawings &amp; Previews</span>
+              <span>Click to Enlarge</span>
+            </div>
+
+            <div class="gallery-grid">
+              <div class="gallery-card" data-img="orthographic_views.png" data-title="Orthographic Engineering Projections">
+                <img src="orthographic_views.png" alt="Orthographic 4-View Projections">
+                <div class="gallery-card-info">
+                  <h4>Orthographic 4-View Drawing</h4>
+                  <span>Front, Side, Top &amp; Iso</span>
+                </div>
+              </div>
+
+              <div class="gallery-card" data-img="cad_preview_iso.png" data-title="Isometric Render — CAD Preview">
+                <img src="cad_preview_iso.png" alt="CAD Isometric Preview">
+                <div class="gallery-card-info">
+                  <h4>Isometric 3D CadQuery Render</h4>
+                  <span>Solid Model Presentation</span>
+                </div>
+              </div>
+
+              <div class="gallery-card" data-img="cad_preview_openscad.png" data-title="OpenSCAD Color Assembly Render">
+                <img src="cad_preview_openscad.png" alt="OpenSCAD Color Assembly Preview">
+                <div class="gallery-card-info">
+                  <h4>OpenSCAD Color Assembly</h4>
+                  <span>Colored Part Envelopes</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 5: DOWNLOAD FILES -->
+          <div id="tab-exports" class="tab-pane">
+            <div class="panel-section-title">
+              <span>CAD Artifacts &amp; Documentation</span>
+              <span>Direct Download</span>
+            </div>
+
+            <div class="download-list">
+              <a href="AI_Desk_Companion_Preliminary_CAD_Engineering_Report.pdf" target="_blank" class="download-card">
+                <div>
+                  <h4>Engineering Report (PDF)</h4>
+                  <p>Comprehensive Mechanical Specification &bull; 443 KB</p>
+                </div>
+                <div class="download-icon">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                </div>
+              </a>
+
+              <a href="AI_Desk_Companion_Assembly.step" download class="download-card">
+                <div>
+                  <h4>Complete Assembly (STEP)</h4>
+                  <p>Master STEP AP214 File &bull; 2.59 MB</p>
+                </div>
+                <div class="download-icon">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                </div>
+              </a>
+
+              <a href="AI_Desk_Companion_Exploded.step" download class="download-card">
+                <div>
+                  <h4>Exploded Assembly (STEP)</h4>
+                  <p>Exploded CAD Presentation &bull; 2.58 MB</p>
+                </div>
+                <div class="download-icon">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                </div>
+              </a>
+
+              <a href="AI_Desk_Companion_Assembly.stl" download class="download-card">
+                <div>
+                  <h4>Envelope Assembly (STL)</h4>
+                  <p>Continuous Mesh for Visualizers &bull; 11.97 MB</p>
+                </div>
+                <div class="download-icon">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                </div>
+              </a>
+
+              <a href="Module_Head.step" download class="download-card">
+                <div>
+                  <h4>Module: Head (STEP)</h4>
+                  <p>Subassembly Solid &bull; 1.0 MB</p>
+                </div>
+                <div class="download-icon">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                </div>
+              </a>
+
+              <a href="Module_Body.step" download class="download-card">
+                <div>
+                  <h4>Module: Torso / Body (STEP)</h4>
+                  <p>Subassembly Solid &bull; 592 KB</p>
+                </div>
+                <div class="download-icon">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                </div>
+              </a>
+
+              <a href="Module_Arms.step" download class="download-card">
+                <div>
+                  <h4>Module: Arms (STEP)</h4>
+                  <p>Subassembly Solid &bull; 266 KB</p>
+                </div>
+                <div class="download-icon">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                </div>
+              </a>
+
+              <a href="Module_Legs.step" download class="download-card">
+                <div>
+                  <h4>Module: Legs (STEP)</h4>
+                  <p>Subassembly Solid &bull; 252 KB</p>
+                </div>
+                <div class="download-icon">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                </div>
+              </a>
+
+              <a href="Module_Feet.step" download class="download-card">
+                <div>
+                  <h4>Module: Feet (STEP)</h4>
+                  <p>Subassembly Solid &bull; 379 KB</p>
+                </div>
+                <div class="download-icon">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                </div>
+              </a>
+            </div>
+          </div>
+
+        </div>
+      </aside>
+
+    </main>
+
+    <!-- Bottom Status Bar -->
+    <footer class="app-footer">
+      <div class="footer-left">
+        <div><span class="status-dot"></span><span>CAD GEOMETRY VALIDATED</span></div>
+        <span style="opacity: 0.4;">|</span>
+        <div id="cam-pos-readout">CAM: (0, 150, 400)</div>
+        <span style="opacity: 0.4;">|</span>
+        <div id="triangles-readout">TRIANGLES: Loading...</div>
+      </div>
+      <div class="footer-right">
+        <span>ENGINE: THREE.JS WEBGL</span>
+        <span style="opacity: 0.4;">|</span>
+        <span>SPEC: OPEN CASCADE / CADQUERY</span>
+      </div>
+    </footer>
+
+    <!-- Fullscreen Image Preview Modal -->
+    <div id="img-modal" class="image-modal">
+      <div class="modal-content">
+        <button id="modal-close" class="modal-close-btn">&times;</button>
+        <img id="modal-img" src="" alt="Technical Drawing Zoom">
+        <div id="modal-caption" style="margin-top:12px; font-size:13px; font-weight:600; color:var(--text-primary);"></div>
+      </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast-notice"></div>
+
+  </div>
+
+  <!-- Local vendor scripts -->
+  <script src="vendor/three.min.js"></script>
+  <script src="vendor/OrbitControls.js"></script>
+  <script src="vendor/STLLoader.js"></script>
+
+  <!-- Pre-compiled Manifest & Parameters data -->
+  <script src="manifest_data.js"></script>
+  <script src="parameters_data.js"></script>
+
+  <!-- Main Application Logic -->
+  <script src="app.js"></script>
+</body>
+</html>

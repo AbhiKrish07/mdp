@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>form. — AI Desk Companion CAD Workspace</title>
+  <meta name="description" content="Minimal, professional 3D CAD inspection suite for the AI Desk Companion. Inspect 75 assembly parts, parametric envelopes, and engineering specifications.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body data-theme="dark">
+  <div id="app-container">
+
+    <!-- Topbar -->
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="Form home">
+        <span class="brand-mark">
+          <svg viewBox="0 0 24 24"><path d="m4 8 8-4 8 4-8 4-8-4Z"/><path d="m4 12 8 4 8-4M4 16l8 4 8-4"/></svg>
+        </span>
+        <span class="brand-name">form<span class="brand-dot">.</span></span>
+      </a>
+
+      <div class="project-title">
+        <strong>Studio Titanium <span class="project-badge">CAD R0.1</span></strong>
+        <span>Packaging &amp; Mechanical Envelope</span>
+      </div>
+
+      <div class="top-actions">
+        <span class="save-state"><i></i> All changes saved</span>
+        <button class="theme-toggle" id="themeToggle" aria-label="Switch to light mode" title="Switch theme">
+          <span class="theme-glyph">☼</span>
+          <span class="theme-label">Light mode</span>
+        </button>
+        <span class="avatar">JD</span>
+      </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <main class="workspace">
+
+      <!-- Left Sidebar Navigation Rail -->
+      <aside class="sidebar" id="sidebar" aria-label="Main navigation">
+        <button class="collapse-toggle" id="sidebarToggle" aria-label="Collapse navigation" title="Collapse navigation">
+          <span>‹</span>
+          <span class="nav-label">Collapse</span>
+        </button>
+
+        <div class="nav-group">
+          <span class="nav-caption">WORKSPACE</span>
+          <button class="nav-item active" data-tab="tab-overview" title="Overview">
+            <span class="nav-icon">⌂</span>
+            <span class="nav-label">Overview</span>
+          </button>
+          <button class="nav-item" data-tab="tab-overview" data-sub="assemblies" title="Assemblies">
+            <span class="nav-icon">▧</span>
+            <span class="nav-label">Assemblies</span>
+            <span class="nav-count">5</span>
+          </button>
+          <button class="nav-item" data-tab="tab-bom" title="Components">
+            <span class="nav-icon">▦</span>
+            <span class="nav-label">Components</span>
+            <span class="nav-count">75</span>
+          </button>
+        </div>
+
+        <div class="nav-group">
+          <span class="nav-caption">DELIVERABLES</span>
+          <button class="nav-item" data-tab="tab-drawings" title="Drawings">
+            <span class="nav-icon">▤</span>
+            <span class="nav-label">Drawings</span>
+          </button>
+          <button class="nav-item" data-tab="tab-files" title="Files">
+            <span class="nav-icon">▱</span>
+            <span class="nav-label">Files</span>
+          </button>
+        </div>
+
+        <div class="sidebar-bottom">
+          <span class="workspace-avatar">ST</span>
+          <span class="nav-label workspace-copy">
+            <strong>Studio Titanium</strong>
+            <small>Design workspace</small>
+          </span>
+          <button class="workspace-menu nav-label" aria-label="Workspace menu">···</button>
+        </div>
+      </aside>
+
+      <!-- Center 3D CAD Viewport -->
+      <section class="viewport" id="viewport-container" aria-label="3D model viewport">
+
+        <!-- View Toolbar (Top Tier) -->
+        <div class="view-toolbar">
+          <div class="view-switch" role="group" aria-label="View orientation">
+            <button class="view-choice active" data-view="iso">ISO</button>
+            <button class="view-choice" data-view="front">Front</button>
+            <button class="view-choice" data-view="right">Right</button>
+            <button class="view-choice" data-view="top">Top</button>
+            <button class="view-choice" data-view="back">Rear</button>
+          </div>
+
+          <div class="viewport-actions">
+            <!-- Inspection Mode Toggles -->
+            <button class="tool-button" id="btn-toggle-wiring" title="Toggle 3D Internal Wiring & Harness Routing">
+              <span class="tiny-icon">⚡</span> Wiring
+            </button>
+            <button class="tool-button" id="btn-toggle-animate" title="Toggle Expressive Motion Animation Cycle">
+              <span class="tiny-icon">▶</span> Animate
+            </button>
+            <button class="tool-button" id="btn-toggle-skeleton" title="Toggle Skeleton / Translucent X-Ray Shells">
+              <span class="tiny-icon">⛶</span> X-Ray
+            </button>
+            <button class="tool-button selected" id="btn-toggle-labels" title="Toggle Color-Coded 3D Component Labels">
+              <span class="tiny-icon">🏷</span> Labels
+            </button>
+
+            <span class="divider"></span>
+            <button class="icon-button" title="Reset View" id="btn-reset-cam">↺</button>
+            <button class="icon-button" title="Capture PNG Snapshot" id="btn-snapshot">📷</button>
+            <button class="icon-button" title="Toggle Inspector Sidebar" id="btn-toggle-inspector">◫</button>
+          </div>
+        </div>
+
+        <!-- Floating Secondary Dock (Bottom Tier) -->
+        <div class="viewport-subbar">
+          <div class="explode-group" title="Expand / Explode Components Assembly">
+            <button class="tool-button" id="btn-animate-explode" title="Animate Expand / Collapse">
+              <span class="tiny-icon">💥</span> Explode
+            </button>
+            <input type="range" id="slider-explode" min="0" max="100" value="0" step="1">
+            <span class="explode-val" id="explode-val">0%</span>
+          </div>
+
+          <span class="divider"></span>
+          <button class="tool-button selected" id="btn-toggle-bbox" title="Toggle 3D Bounding Box">
+            <span class="tiny-icon">□</span> Bounds
+          </button>
+          <button class="tool-button selected" id="btn-toggle-grid" title="Toggle Ground Grid">
+            <span class="tiny-icon">▦</span> Grid
+          </button>
+          <button class="tool-button selected" id="btn-toggle-axes" title="Toggle Coordinate Axes">
+            <span class="tiny-icon">＋</span> Axes
+          </button>
+
+          <span class="divider"></span>
+          <select id="render-style-select" class="action-select-mini" title="Material Shader">
+            <option value="studio">Studio Titanium</option>
+            <option value="cad_color">Multi-Color CAD</option>
+            <option value="cyberpunk">Cyberpunk Stealth</option>
+            <option value="clay">Clay Matte</option>
+            <option value="wireframe">Blueprint Wireframe</option>
+            <option value="ghost">X-Ray Ghost</option>
+          </select>
+
+          <button class="tool-button" id="btn-toggle-slice" title="Toggle 3D Cross-Section Slicing">
+            <span class="tiny-icon">✂</span> Section
+          </button>
+          <button class="tool-button" id="btn-toggle-autorotate" title="Toggle Auto-Orbit">
+            <span class="tiny-icon">↻</span> Orbit
+          </button>
+        </div>
+
+        <!-- Assembly Envelope HUD -->
+        <div class="model-meta">
+          <span class="eyebrow">ASSEMBLY ENVELOPE</span>
+          <div class="dimensions">264.1 <small>H</small><b>×</b> 178.0 <small>W</small><b>×</b> 100.2 <small>D mm</small></div>
+          <span class="meta-note">75 verified components <span class="dot-sep">·</span> No invalid shapes</span>
+        </div>
+
+        <!-- Interactive 3D Cross-Section Slicing Panel -->
+        <div id="slicing-panel" class="slicing-panel hidden">
+          <div class="slicing-header">
+            <span>3D Section Slicing</span>
+            <button id="btn-close-slice" aria-label="Close slicing">&times;</button>
+          </div>
+          <div class="slider-group">
+            <div class="slider-label">
+              <span>Z-Axis Plane (Height Cut)</span>
+              <span id="slice-z-val" class="val">270 mm</span>
+            </div>
+            <input type="range" id="slider-slice-z" min="0" max="270" step="1" value="270">
+          </div>
+          <div class="slider-group">
+            <div class="slider-label">
+              <span>Y-Axis Plane (Depth Cut)</span>
+              <span id="slice-y-val" class="val">50 mm</span>
+            </div>
+            <input type="range" id="slider-slice-y" min="-60" max="50" step="1" value="50">
+          </div>
+          <div class="slider-group">
+            <div class="slider-label">
+              <span>X-Axis Plane (Width Cut)</span>
+              <span id="slice-x-val" class="val">90 mm</span>
+            </div>
+            <input type="range" id="slider-slice-x" min="-90" max="90" step="1" value="90">
+          </div>
+          <button id="btn-reset-slices" class="slice-reset-btn">Reset All Slicing Planes</button>
+        </div>
+
+        <!-- Real 3D CAD WebGL Canvas -->
+        <canvas id="three-canvas"></canvas>
+
+        <!-- 3D Component Labels Overlay -->
+        <div id="labels-overlay"></div>
+
+        <!-- 3D Raycast Tooltip -->
+        <div id="part-3d-tooltip"></div>
+
+        <!-- Loading Screen Overlay -->
+        <div id="loader-overlay">
+          <div class="loader-spinner"></div>
+          <div class="loader-text">Loading AI Desk Companion CAD Model</div>
+          <div class="loader-progress">
+            <div class="loader-bar" id="loader-progress-bar"></div>
+          </div>
+          <div class="loader-status" id="loader-status-text">Parsing Open CASCADE STL Geometry...</div>
+        </div>
+
+        <!-- Viewport Footer -->
+        <div class="viewport-footer">
+          <span><i class="live-dot"></i> Geometry validated</span>
+          <span>Perspective <b>·</b> 45°</span>
+          <span id="cam-pos-readout">CAM: (240, 240, 310)</span>
+          <div class="viewport-footer-right">
+            <span id="triangles-readout">TRIANGLES: Loading...</span>
+            <span>OPEN CASCADE · THREE.JS</span>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- Right Inspector Panel -->
+      <aside class="inspector">
+        <nav class="tabs" aria-label="Inspector sections">
+          <button class="tab active" data-tab="tab-overview">Overview</button>
+          <button class="tab" data-tab="tab-bom">Parts <span>75</span></button>
+          <button class="tab" data-tab="tab-params">Parameters</button>
+          <button class="tab" data-tab="tab-drawings">Drawings</button>
+          <button class="tab" data-tab="tab-files">Files</button>
+        </nav>
+
+        <div class="tab-content-container">
+
+          <!-- TAB 1: OVERVIEW -->
+          <div id="tab-overview" class="tab-pane active">
+            <div class="section-heading">
+              <div>
+                <span class="eyebrow">PROJECT SUMMARY</span>
+                <h1>Assembly overview</h1>
+              </div>
+              <button class="more-button" aria-label="More summary options">···</button>
+            </div>
+
+            <!-- Metrics 2x2 Grid -->
+            <div class="metric-grid">
+              <article class="metric">
+                <span>Total height</span>
+                <strong>264.1 <small>mm</small></strong>
+                <div class="target">Target <b>270.0 mm</b></div>
+              </article>
+              <article class="metric">
+                <span>Total width</span>
+                <strong>178.0 <small>mm</small></strong>
+                <div class="target">Target <b>180.0 mm</b></div>
+              </article>
+              <article class="metric">
+                <span>Total depth</span>
+                <strong>100.2 <small>mm</small></strong>
+                <div class="target">Target <b>130.0 mm</b></div>
+              </article>
+              <article class="metric">
+                <span>Solid bodies</span>
+                <strong>75 <small>solids</small></strong>
+                <div class="target good">All geometry valid</div>
+              </article>
+            </div>
+
+            <!-- Subsystems List -->
+            <div class="list-heading">
+              <div>
+                <h2>Subsystems</h2>
+                <span>5 assemblies</span>
+              </div>
+              <button class="text-button" id="btn-view-all-subsystems">View all</button>
+            </div>
+
+            <div class="subsystem-list">
+              <button class="subsystem" data-subsystem="head">
+                <span class="sub-icon">◉</span>
+                <span class="sub-copy">
+                  <strong>Head &amp; sensor array</strong>
+                  <small>OLED bezel, dual cameras, Pi 5</small>
+                </span>
+                <span class="part-count">25</span>
+                <span class="chevron">›</span>
+              </button>
+
+              <button class="subsystem" data-subsystem="body">
+                <span class="sub-icon">▣</span>
+                <span class="sub-copy">
+                  <strong>Torso logic bay</strong>
+                  <small>Power distribution &amp; cooling</small>
+                </span>
+                <span class="part-count">14</span>
+                <span class="chevron">›</span>
+              </button>
+
+              <button class="subsystem" data-subsystem="arms">
+                <span class="sub-icon">⌁</span>
+                <span class="sub-copy">
+                  <strong>Articulated arms</strong>
+                  <small>3-DOF joints, left &amp; right</small>
+                </span>
+                <span class="part-count">26</span>
+                <span class="chevron">›</span>
+              </button>
+
+              <button class="subsystem" data-subsystem="legs">
+                <span class="sub-icon">Ⅱ</span>
+                <span class="sub-copy">
+                  <strong>Leg columns</strong>
+                  <small>Dual structural supports</small>
+                </span>
+                <span class="part-count">4</span>
+                <span class="chevron">›</span>
+              </button>
+
+              <button class="subsystem" data-subsystem="feet">
+                <span class="sub-icon">⌑</span>
+                <span class="sub-copy">
+                  <strong>Stabilizer feet</strong>
+                  <small>Anti-tip contact pads</small>
+                </span>
+                <span class="part-count">6</span>
+                <span class="chevron">›</span>
+              </button>
+            </div>
+
+            <!-- Ready to Export Bottom Card -->
+            <div class="inspector-bottom" id="btn-goto-files">
+              <span class="file-icon">↗</span>
+              <span>
+                <strong>Ready to export</strong>
+                <small>STEP, STL and technical drawings</small>
+              </span>
+              <button aria-label="Open export options">→</button>
+            </div>
+          </div>
+
+          <!-- TAB 2: BOM / PARTS -->
+          <div id="tab-bom" class="tab-pane">
+            <div class="section-heading">
+              <div>
+                <span class="eyebrow">BILL OF MATERIALS</span>
+                <h1>Components (75)</h1>
+              </div>
+            </div>
+
+            <div class="bom-controls">
+              <div class="search-input-box">
+                <svg class="search-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <input type="text" id="bom-search" class="search-input" placeholder="Search 75 components...">
+              </div>
+
+              <div class="filter-chips">
+                <button class="filter-chip active" data-filter="all">All</button>
+                <button class="filter-chip" data-filter="head">Head</button>
+                <button class="filter-chip" data-filter="body">Body</button>
+                <button class="filter-chip" data-filter="arms">Arms</button>
+                <button class="filter-chip" data-filter="legs">Legs</button>
+                <button class="filter-chip" data-filter="feet">Feet</button>
+              </div>
+            </div>
+
+            <!-- Selected Part Card -->
+            <div id="selected-part-card" class="selected-part-card">
+              <div class="sp-header">
+                <span id="sp-name" class="sp-title">Part Name</span>
+                <span id="sp-mod" class="sp-module-badge">MODULE</span>
+              </div>
+              <div id="sp-details" class="sp-details"></div>
+            </div>
+
+            <!-- Parts List Table -->
+            <div class="parts-table-wrap">
+              <table class="parts-table">
+                <thead>
+                  <tr>
+                    <th>Component Name</th>
+                    <th>Module</th>
+                    <th>Envelope (X×Y×Z mm)</th>
+                  </tr>
+                </thead>
+                <tbody id="bom-tbody">
+                  <!-- Populated dynamically via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- TAB 3: PARAMETERS -->
+          <div id="tab-params" class="tab-pane">
+            <div class="section-heading">
+              <div>
+                <span class="eyebrow">PARAMETRIC CONSTRAINTS</span>
+                <h1>Design parameters</h1>
+              </div>
+            </div>
+
+            <div class="params-table-wrap">
+              <table class="params-table">
+                <thead>
+                  <tr>
+                    <th>Design Parameter</th>
+                    <th style="text-align: right;">Nominal (mm)</th>
+                  </tr>
+                </thead>
+                <tbody id="params-table">
+                  <!-- Populated dynamically via JS -->
+                </tbody>
+              </table>
+            </div>
+
+            <div class="notes-card">
+              <h3>Specification Integrity Notes</h3>
+              <ul>
+                <li>Bounding envelopes verified with zero intersecting non-manifold defects.</li>
+                <li>Clearance tolerances nominal for SLA/SLS additive rapid prototyping.</li>
+                <li>Center of gravity optimized directly over stabilizer contact footpads.</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- TAB 4: DRAWINGS -->
+          <div id="tab-drawings" class="tab-pane">
+            <div class="section-heading">
+              <div>
+                <span class="eyebrow">ENGINEERING DRAWINGS</span>
+                <h1>Technical sheets</h1>
+              </div>
+            </div>
+
+            <div class="drawings-grid">
+              <div class="drawing-card" data-img="orthographic_views.png" data-title="Orthographic Multi-View Engineering Projection">
+                <div class="drawing-thumb-wrap">
+                  <img src="orthographic_views.png" alt="Orthographic Projection" class="drawing-thumb" loading="lazy">
+                </div>
+                <div class="drawing-info">
+                  <strong>Orthographic Multi-View Projection</strong>
+                  <span>Front, Top, Right Profile &amp; Envelope Callouts</span>
+                </div>
+              </div>
+
+              <div class="drawing-card" data-img="cad_preview_iso.png" data-title="CAD Isometric Shaded Engineering View">
+                <div class="drawing-thumb-wrap">
+                  <img src="cad_preview_iso.png" alt="CAD Isometric View" class="drawing-thumb" loading="lazy">
+                </div>
+                <div class="drawing-info">
+                  <strong>CAD Isometric Shaded View</strong>
+                  <span>3D Assembly Perspective with Volumetric Envelopes</span>
+                </div>
+              </div>
+
+              <div class="drawing-card" data-img="cad_preview_openscad.png" data-title="OpenSCAD CSG Constructive Model">
+                <div class="drawing-thumb-wrap">
+                  <img src="cad_preview_openscad.png" alt="OpenSCAD CSG Model" class="drawing-thumb" loading="lazy">
+                </div>
+                <div class="drawing-info">
+                  <strong>OpenSCAD Constructive Solid Model</strong>
+                  <span>CSG Boolean Geometry Verification View</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 5: FILES / EXPORTS -->
+          <div id="tab-files" class="tab-pane">
+            <div class="section-heading">
+              <div>
+                <span class="eyebrow">PACKAGING DELIVERABLES</span>
+                <h1>Export CAD assets</h1>
+              </div>
+            </div>
+
+            <div class="files-list">
+              <a href="AI_Desk_Companion_Assembly_R0_1.step" download class="file-download-item">
+                <span class="file-type-badge">STEP</span>
+                <div class="file-meta">
+                  <strong>AI_Desk_Companion_Assembly_R0_1.step</strong>
+                  <small>Full 75-solid boundary representation master (2.6 MB)</small>
+                </div>
+                <span class="file-action-icon">↓</span>
+              </a>
+
+              <a href="AI_Desk_Companion_Assembly_Motion_R1.step" download class="file-download-item">
+                <span class="file-type-badge">STEP</span>
+                <div class="file-meta">
+                  <strong>AI_Desk_Companion_Assembly_Motion_R1.step</strong>
+                  <small>Motion Revision 1 with articulated kinematics (3.7 MB)</small>
+                </div>
+                <span class="file-action-icon">↓</span>
+              </a>
+
+              <a href="AI_Desk_Companion_Assembly_R0_1.stl" download class="file-download-item">
+                <span class="file-type-badge">STL</span>
+                <div class="file-meta">
+                  <strong>AI_Desk_Companion_Assembly_R0_1.stl</strong>
+                  <small>High-density 3D printing &amp; WebGL mesh (11.9 MB)</small>
+                </div>
+                <span class="file-action-icon">↓</span>
+              </a>
+
+              <a href="AI_Desk_Companion_CAD_and_Motion_Engineering_Report_R1.pdf" download class="file-download-item">
+                <span class="file-type-badge">PDF</span>
+                <div class="file-meta">
+                  <strong>Engineering_Report_R1.pdf</strong>
+                  <small>Kinematics &amp; Packaging Engineering Report (322 KB)</small>
+                </div>
+                <span class="file-action-icon">↓</span>
+              </a>
+
+              <a href="Module_Head.step" download class="file-download-item">
+                <span class="file-type-badge">STEP</span>
+                <div class="file-meta">
+                  <strong>Module_Head.step</strong>
+                  <small>Head, sensor bay, camera &amp; display envelope (1.0 MB)</small>
+                </div>
+                <span class="file-action-icon">↓</span>
+              </a>
+
+              <a href="Module_Body.step" download class="file-download-item">
+                <span class="file-type-badge">STEP</span>
+                <div class="file-meta">
+                  <strong>Module_Body.step</strong>
+                  <small>Torso core logic, power &amp; cooling bay (592 KB)</small>
+                </div>
+                <span class="file-action-icon">↓</span>
+              </a>
+
+              <a href="Module_Arms.step" download class="file-download-item">
+                <span class="file-type-badge">STEP</span>
+                <div class="file-meta">
+                  <strong>Module_Arms.step</strong>
+                  <small>Articulated 3-DOF left &amp; right arms (267 KB)</small>
+                </div>
+                <span class="file-action-icon">↓</span>
+              </a>
+            </div>
+          </div>
+
+        </div>
+      </aside>
+
+    </main>
+
+    <!-- Fullscreen Image Preview Lightbox Modal -->
+    <div id="img-modal" class="image-modal">
+      <div class="modal-content">
+        <button id="modal-close" class="modal-close-btn">&times;</button>
+        <img id="modal-img" src="" alt="Technical Drawing Zoom">
+        <div id="modal-caption" class="modal-caption"></div>
+      </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast" role="status"></div>
+
+  </div>
+
+  <!-- Local vendor scripts -->
+  <script src="vendor/three.min.js"></script>
+  <script src="vendor/OrbitControls.js"></script>
+  <script src="vendor/STLLoader.js"></script>
+
+  <!-- Pre-compiled Manifest & Parameters data -->
+  <script src="manifest_data.js"></script>
+  <script src="parameters_data.js"></script>
+  <script src="components_manifest.js"></script>
+
+  <!-- Main Application Logic -->
+  <script src="app.js"></script>
+</body>
+</html>

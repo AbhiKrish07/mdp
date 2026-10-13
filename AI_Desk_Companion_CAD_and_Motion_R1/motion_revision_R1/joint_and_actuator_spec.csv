@@ -1,0 +1,9 @@
+Joint/assembly,Axis / motion,Proposed range,Actuator count,Notes
+Left shoulder pitch,X axis; arm raises/lowers in Y-Z plane,-35 to +50 deg,1,Servo envelope placeholder; select actuator from torque calculations
+Left elbow pitch,X axis; relative to upper arm,-60 to +65 deg,1,Servo envelope placeholder; mechanical stops required
+Left gripper,Coupled jaw rotation about Z axes,22.6 mm open tip-center gap to 5.6 mm closed tip-center gap,1,One servo plus linkage; closed gap is not zero
+Right shoulder pitch,X axis; arm raises/lowers in Y-Z plane,-35 to +50 deg,1,Mirror of left shoulder
+Right elbow pitch,X axis; relative to upper arm,-60 to +65 deg,1,Mirror of left elbow
+Right gripper,Coupled jaw rotation about Z axes,22.6 mm open tip-center gap to 5.6 mm closed tip-center gap,1,One servo plus linkage
+Head tilt,Not implemented in this arm revision,Not specified,0,Requires a separate neck hinge/dock redesign to preserve electrical connection
+Leg/body locomotion,Not implemented,N/A,0,"Current design has structural legs and broad feet, no wheel/track drive"

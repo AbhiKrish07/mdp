@@ -1,0 +1,13 @@
+{
+  "revision": "R1 articulated-arm pose model",
+  "nominal_overall_bbox_mm": {
+    "x": 123.41,
+    "y": 142.3,
+    "z": 264.05
+  },
+  "component_count": 85,
+  "invalid_shape_count": 0,
+  "invalid_shape_names": [],
+  "verification_scope": "individual solid validity only; no collision, strength, torque, tolerance or physical tests",
+  "pose_count": 7
+}
